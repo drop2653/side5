@@ -79,6 +79,7 @@ Num 0: 포격
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
 <script>
+  const socket = io("https://side5.onrender.com");
   const lobby = document.getElementById("lobby");
 const readyBtn = document.getElementById("readyBtn");
 const statusText = document.getElementById("statusText");
@@ -765,6 +766,7 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
 
 
