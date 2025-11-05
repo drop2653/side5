@@ -81,24 +81,7 @@ Num 0: 포격
 <script>
  const socket = io("https://side5.onrender.com");
 
-let myId = null;
-let enemyId = null;
-let isHost = false;
-let playerRole, readyBtn, statusText;
-
-window.onload = () => {
-  playerRole = document.getElementById("playerRole");
-  readyBtn = document.getElementById("readyBtn");
-  statusText = document.getElementById("statusText");
-
-  readyBtn.addEventListener("click", () => {
-    socket.emit("ready");
-    readyBtn.disabled = true;
-    statusText.textContent = "준비 완료. 상대를 기다리는 중...";
-  });
-};
-
-  socket.on("roomJoined", (data) => {
+    socket.on("roomJoined", (data) => {
   console.log("🟢 roomJoined 수신됨:", data);
   isHost = data.isHost;
   myId = data.playerId;
@@ -113,6 +96,22 @@ window.onload = () => {
   // 초기 위치 설정
   playerTank.x = isHost ? 400 : 1200;
   playerTank.y = isHost ? 400 : 1000;
+
+let myId = null;
+let enemyId = null;
+let isHost = false;
+let playerRole, readyBtn, statusText;
+  
+  playerRole = document.getElementById("playerRole");
+
+window.onload = () => {
+  readyBtn = document.getElementById("readyBtn");
+  statusText = document.getElementById("statusText");
+
+  readyBtn.addEventListener("click", () => {
+    socket.emit("ready");
+    readyBtn.disabled = true;
+    statusText.textContent = "준비 완료. 상대를 기다리는 중...";
 });
   socket.on("startGame", ({ countdown }) => {
     console.log("🚀 게임 시작:", countdown);
@@ -830,6 +829,7 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
 
 
