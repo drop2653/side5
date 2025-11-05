@@ -94,14 +94,19 @@ const socket = io("https://side5.onrender.com");
   let myId = null;
 socket.on("init", (data) => {
   myId = data.id;// 실제 서버 주소로 교체
+  });
 socket.on("opponentMove", (data) => {
-  enemyTank.x = data.x;
-  enemyTank.y = data.y;
-  enemyTank.angle = data.angle;
-  enemyTank.turretAngle = data.turretAngle;
+  if (data.id !== myId) {
+    enemyTank.x = data.x;
+    enemyTank.y = data.y;
+    enemyTank.angle = data.angle;
+    enemyTank.turretAngle = data.turretAngle;
+  }
 });
 socket.on("enemyFire", (data) => {
-  bullets.push({ ...data, from: 'enemy' });
+  if (data.id !== myId) {
+    bullets.push({ ...data, from: 'enemy' });
+  }
 });
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d', { alpha: false });
@@ -269,7 +274,8 @@ if (keys[keyMap.brake]) { // S키 전체 브레이크
     playerTank.x = clamp(playerTank.x, 20, map.w-20);
     playerTank.y = clamp(playerTank.y, 20, map.h-20);
 
-      socket.emit("move", {
+     socket.emit("move", {
+  id: myId, // ← 이 줄 추가
   x: playerTank.x,
   y: playerTank.y,
   angle: playerTank.angle,
@@ -354,7 +360,8 @@ if (keys[keyMap.brake]) { // S키 전체 브레이크
       splashRadius: info.splashRadius || 0,
       type: selectedAmmoKey
     });
-    socket.emit("fire", {
+   socket.emit("fire", {
+  id: myId, // ← 추가
   x: px,
   y: py,
   vx: Math.cos(playerTank.turretAngle)*speed,
@@ -720,4 +727,5 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
