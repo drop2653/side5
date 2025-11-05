@@ -56,6 +56,39 @@ for (const pid of players) {
   });
 }
   socket.on("chooseRole", ({ role }) => {
+  if (!joinedRoom) {
+    joinedRoom = "room_" + Math.random().toString(36).substr(2, 5);
+    rooms[joinedRoom] = { players: [], ready: {}, gameStarted: false };
+  }
+
+  socket.join(joinedRoom);
+  const room = rooms[joinedRoom];
+  room.players.push(socket.id);
+  socket.role = role;
+  room.ready[socket.id] = true;
+
+  console.log(`🎮 ${socket.id} (${role}) 참가`);
+
+  const [p1, p2] = room.players;
+  const allReady = room.players.length === 2;
+
+  // 역할 전달
+  for (const pid of room.players) {
+    const enemy = room.players.find(id => id !== pid);
+    io.to(pid).emit("roomJoined", {
+      room: joinedRoom,
+      isHost: io.sockets.sockets.get(pid).role === "host",
+      playerId: pid,
+      enemyId: enemy || null
+    });
+  }
+
+  if (allReady && !room.gameStarted) {
+    room.gameStarted = true;
+    io.to(joinedRoom).emit("startGame", { countdown: 5 });
+  }
+});
+  socket.on("chooseRole", ({ role }) => {
   if (!joinedRoom) return;
 
   const roomData = rooms[joinedRoom];
@@ -147,6 +180,7 @@ for (const pid of players) {
 // ✅ Render에서 자동 포트 사용
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`✅ 서버 실행 중: ${PORT}`));
+
 
 
 
