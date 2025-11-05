@@ -91,13 +91,6 @@ let isHost = false;
 let myId = null;
 let enemyId = null;
 
-socket.on("roomJoined", (data) => {
-  myRoom = data.room;
-  isHost = data.isHost;
-  myId = data.playerId;
-  enemyId = data.enemyId;
-  playerRole.textContent = "역할: " + (isHost ? "방장" : "참가자");
-
   // 각 플레이어는 서로 다른 위치에 스폰되도록 초기 위치 조정
   if (isHost) {
     playerTank.x = 400;
@@ -187,6 +180,28 @@ const enemyTank = {
   turretAngle: 0,
   hp: 100
 };
+  
+  let myId = null;
+let enemyId = null;
+
+socket.on("roomJoined", (data) => {
+  myRoom = data.room;
+  isHost = data.isHost;
+  myId = data.playerId;
+  enemyId = data.enemyId;
+  playerRole.textContent = "역할: " + (isHost ? "방장" : "참가자");
+
+  // 이제 playerTank가 정의되어 있으니 위치를 정확히 변경할 수 있음
+  if (isHost) {
+    playerTank.x = 400;
+    playerTank.y = 400;
+  } else {
+    playerTank.x = 1200;
+    playerTank.y = 1000;
+  }
+
+  console.log(`🎮 내 위치: (${playerTank.x}, ${playerTank.y})`);
+});
 
   const muzzleFlashes = [];
 
@@ -593,8 +608,8 @@ ctx.fillRect(0, -3, 42, 6);
 ctx.beginPath(); ctx.arc(0,0,12,0,Math.PI*2); ctx.fill();
 ctx.restore();
     // hull body
-    ctx.fillStyle = '#3a5';
-    ctx.fillRect(-28, -18, 56, 36);
+ctx.fillStyle = isHost ? '#3a5' : '#358';  // 방장은 초록빛, 참가자는 파란빛
+ctx.fillRect(-28, -18, 56, 36);
     // tracks
 ctx.fillStyle = '#222';
 ctx.fillRect(-28, -26, 56, 8);  // 위쪽 궤도
@@ -780,6 +795,7 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
 
 
