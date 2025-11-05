@@ -79,26 +79,46 @@ Num 0: 포격
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
 <script>
-  const socket = io();
+ const socket = io("https://side5.onrender.com");
 
-  let myRoom = null;
 let myId = null;
 let enemyId = null;
 let isHost = false;
-  
-const lobby = document.getElementById("lobby");
-const readyBtn = document.getElementById("readyBtn");
-const statusText = document.getElementById("statusText");
-const playerRole = document.getElementById("playerRole");
+let playerRole, readyBtn, statusText;
 
-// 버튼 리스너
-if (readyBtn) {
+window.onload = () => {
+  playerRole = document.getElementById("playerRole");
+  readyBtn = document.getElementById("readyBtn");
+  statusText = document.getElementById("statusText");
+
   readyBtn.addEventListener("click", () => {
     socket.emit("ready");
     readyBtn.disabled = true;
     statusText.textContent = "준비 완료. 상대를 기다리는 중...";
   });
-}
+};
+
+  socket.on("roomJoined", (data) => {
+  console.log("🟢 roomJoined 수신됨:", data);
+  isHost = data.isHost;
+  myId = data.playerId;
+  enemyId = data.enemyId;
+
+  if (playerRole) {
+    playerRole.textContent = "역할: " + (isHost ? "방장" : "참가자");
+  } else {
+    console.warn("⚠️ playerRole 요소를 찾지 못했습니다.");
+  }
+
+  // 초기 위치 설정
+  playerTank.x = isHost ? 400 : 1200;
+  playerTank.y = isHost ? 400 : 1000;
+});
+  socket.on("startGame", ({ countdown }) => {
+    console.log("🚀 게임 시작:", countdown);
+    statusText.textContent = "게임 시작!";
+  });
+};
   const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d', { alpha: false });
 const W = canvas.width, H = canvas.height;
@@ -126,14 +146,6 @@ const enemyTank = {
   turretAngle: 0,
   hp: 100
 };
-
-// 방 참가 시 수신
-socket.on("roomJoined", (data) => {
-  myRoom = data.room;
-  isHost = data.isHost;
-  myId = data.playerId;
-  enemyId = data.enemyId;
-  playerRole.textContent = "역할: " + (isHost ? "방장" : "참가자");
 
   // 각 플레이어 위치 분리
   if (isHost) {
@@ -818,6 +830,7 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
 
 
