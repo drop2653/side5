@@ -109,11 +109,28 @@ const enemyTank = {
   turretAngle: 0,
   hp: 100
 };
+   const playerTank = {
+  x: W/2, y: H/2,
+  angle: 0,
+  turretAngle: 0,
+  speedLeft: 0, speedRight: 0,
+  maxTrackSpeed: 50,
+  trackAccel: 220,
+  mass: 120,
+  hp: 100
+    };
+
+    const enemyTank = {
+  x: W/2, y: H/2,
+  angle: 0,
+  turretAngle: 0,
+  hp: 100
+};
 
 // 방 참가 시 수신
 socket.on("roomJoined", (data) => {
   myRoom = data.room;
-  isHtos = data.isHost;
+  isHost = data.isHost;
   myId = data.playerId;
   enemyId = data.enemyId;
   playerRole.textContent = "역할: " + (isHost ? "방장" : "참가자");
@@ -179,15 +196,6 @@ const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d', { alpha: false });
 const W = canvas.width, H = canvas.height;
       // State
- const playerTank = {
-  x: W/2, y: H/2,
-  angle: 0,
-  turretAngle: 0,
-  speedLeft: 0, speedRight: 0,
-  maxTrackSpeed: 50,
-  trackAccel: 220,
-  mass: 120,
-  hp: 100
 };
   const mmCanvas = document.getElementById('minimapCanvas');
   const mmCtx = mmCanvas.getContext('2d');
@@ -810,6 +818,7 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
 
 
