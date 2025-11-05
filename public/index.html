@@ -88,10 +88,24 @@ const playerRole = document.getElementById("playerRole");
 let myRoom = null;
 let isHost = false;
 
+let myId = null;
+let enemyId = null;
+
 socket.on("roomJoined", (data) => {
   myRoom = data.room;
   isHost = data.isHost;
+  myId = data.playerId;
+  enemyId = data.enemyId;
   playerRole.textContent = "역할: " + (isHost ? "방장" : "참가자");
+
+  // 각 플레이어는 서로 다른 위치에 스폰되도록 초기 위치 조정
+  if (isHost) {
+    playerTank.x = 400;
+    playerTank.y = 400;
+  } else {
+    playerTank.x = 1200;
+    playerTank.y = 1000;
+  }
 });
 
 readyBtn.addEventListener("click", () => {
@@ -134,15 +148,16 @@ socket.on("init", (data) => {
   myId = data.id;// 실제 서버 주소로 교체
   });
 socket.on("opponentMove", (data) => {
-  if (data.id !== myId) {
+  if (data.id === enemyId) {
     enemyTank.x = data.x;
     enemyTank.y = data.y;
     enemyTank.angle = data.angle;
     enemyTank.turretAngle = data.turretAngle;
   }
 });
+
 socket.on("enemyFire", (data) => {
-  if (data.id !== myId) {
+  if (data.id === enemyId) {
     bullets.push({ ...data, from: 'enemy' });
   }
 });
@@ -765,6 +780,7 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
 
 
