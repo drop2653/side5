@@ -80,12 +80,30 @@ Num 0: 포격
 
 <script>
   const socket = io("https://side5.onrender.com");
-  const lobby = document.getElementById("lobby");
+const lobby = document.getElementById("lobby");
 const readyBtn = document.getElementById("readyBtn");
 const statusText = document.getElementById("statusText");
 const playerRole = document.getElementById("playerRole");
 
-  // 각 플레이어는 서로 다른 위치에 스폰되도록 초기 위치 조정
+// 버튼 리스너
+if (readyBtn) {
+  readyBtn.addEventListener("click", () => {
+    socket.emit("ready");
+    readyBtn.disabled = true;
+    statusText.textContent = "준비 완료. 상대를 기다리는 중...";
+  });
+}
+
+// 방 참가 시 수신
+socket.on("roomJoined", (data) => {
+  myRoom = data.room;
+  isHost = data.isHost;
+  myId = data.playerId;
+  enemyId = data.enemyId;
+
+  playerRole.textContent = "역할: " + (isHost ? "방장" : "참가자");
+
+  // 각 플레이어 위치 분리
   if (isHost) {
     playerTank.x = 400;
     playerTank.y = 400;
@@ -93,12 +111,7 @@ const playerRole = document.getElementById("playerRole");
     playerTank.x = 1200;
     playerTank.y = 1000;
   }
-});
-
-readyBtn.addEventListener("click", () => {
-  socket.emit("ready");
-  readyBtn.disabled = true;
-  statusText.textContent = "준비 완료. 상대를 기다리는 중...";
+  console.log(`🎮 내 전차 위치: (${playerTank.x}, ${playerTank.y})`);
 });
 
 (() => {
@@ -174,47 +187,37 @@ const enemyTank = {
   turretAngle: 0,
   hp: 100
 };
-  
-let myRoom = null;
-let isHost = false;
-let myId = null;
-let enemyId = null;
 
-socket.on("roomJoined", (data) => {
-  myRoom = data.room;
-  isHost = data.isHost;
-  myId = data.playerId;
-  enemyId = data.enemyId;
+// lobby 요소를 미리 가져오기
+const playerRole = document.getElementById("playerRole");
+const readyBtn = document.getElementById("readyBtn");
+const statusText = document.getElementById("statusText");
 
-  // HTML 요소가 모두 로드된 후에 접근해야 함
-  const playerRole = document.getElementById("playerRole");
-  const readyBtn = document.getElementById("readyBtn");
-  const statusText = document.getElementById("statusText");
-
+  // 역할 출력
   if (playerRole) {
     playerRole.textContent = "역할: " + (isHost ? "방장" : "참가자");
   }
 
-  if (playerTank) {
-    if (isHost) {
-      playerTank.x = 400;
-      playerTank.y = 400;
-    } else {
-      playerTank.x = 1200;
-      playerTank.y = 1000;
-    }
-    console.log(`🎮 내 전차 위치: (${playerTank.x}, ${playerTank.y})`);
+// 전차 시작 위치 설정
+if (typeof playerTank !== "undefined") {
+  if (isHost) {
+    playerTank.x = 400;
+    playerTank.y = 400;
+  } else {
+    playerTank.x = 1200;
+    playerTank.y = 1000;
   }
+  console.log(`🎮 내 전차 위치: (${playerTank.x}, ${playerTank.y})`);
+}
 
-  if (readyBtn) {
-    readyBtn.disabled = false;
-    readyBtn.addEventListener("click", () => {
-      socket.emit("ready");
-      readyBtn.disabled = true;
-      statusText.textContent = "준비 완료. 상대를 기다리는 중...";
-    });
-  }
-});
+// 버튼 리스너는 socket 연결과 별개로 한 번만 연결
+if (readyBtn) {
+  readyBtn.addEventListener("click", () => {
+    socket.emit("ready");
+    readyBtn.disabled = true;
+    statusText.textContent = "준비 완료. 상대를 기다리는 중...";
+  });
+}
   const muzzleFlashes = [];
 
   // Camera / view
@@ -807,6 +810,7 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
 
 
