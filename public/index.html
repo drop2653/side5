@@ -85,12 +85,6 @@ const readyBtn = document.getElementById("readyBtn");
 const statusText = document.getElementById("statusText");
 const playerRole = document.getElementById("playerRole");
 
-let myRoom = null;
-let isHost = false;
-
-let myId = null;
-let enemyId = null;
-
   // 각 플레이어는 서로 다른 위치에 스폰되도록 초기 위치 조정
   if (isHost) {
     playerTank.x = 400;
@@ -181,7 +175,9 @@ const enemyTank = {
   hp: 100
 };
   
-  let myId = null;
+let myRoom = null;
+let isHost = false;
+let myId = null;
 let enemyId = null;
 
 socket.on("roomJoined", (data) => {
@@ -189,20 +185,36 @@ socket.on("roomJoined", (data) => {
   isHost = data.isHost;
   myId = data.playerId;
   enemyId = data.enemyId;
-  playerRole.textContent = "역할: " + (isHost ? "방장" : "참가자");
 
-  // 이제 playerTank가 정의되어 있으니 위치를 정확히 변경할 수 있음
-  if (isHost) {
-    playerTank.x = 400;
-    playerTank.y = 400;
-  } else {
-    playerTank.x = 1200;
-    playerTank.y = 1000;
+  // HTML 요소가 모두 로드된 후에 접근해야 함
+  const playerRole = document.getElementById("playerRole");
+  const readyBtn = document.getElementById("readyBtn");
+  const statusText = document.getElementById("statusText");
+
+  if (playerRole) {
+    playerRole.textContent = "역할: " + (isHost ? "방장" : "참가자");
   }
 
-  console.log(`🎮 내 위치: (${playerTank.x}, ${playerTank.y})`);
-});
+  if (playerTank) {
+    if (isHost) {
+      playerTank.x = 400;
+      playerTank.y = 400;
+    } else {
+      playerTank.x = 1200;
+      playerTank.y = 1000;
+    }
+    console.log(`🎮 내 전차 위치: (${playerTank.x}, ${playerTank.y})`);
+  }
 
+  if (readyBtn) {
+    readyBtn.disabled = false;
+    readyBtn.addEventListener("click", () => {
+      socket.emit("ready");
+      readyBtn.disabled = true;
+      statusText.textContent = "준비 완료. 상대를 기다리는 중...";
+    });
+  }
+});
   const muzzleFlashes = [];
 
   // Camera / view
@@ -795,6 +807,7 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
 
 
