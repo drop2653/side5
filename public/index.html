@@ -23,6 +23,12 @@
 </style>
 </head>
 <body>
+  <div id="lobby" style="position:absolute;top:0;left:0;width:100%;height:100%;background:#000c;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:1000;">
+  <h1>🛡️ 탱크 매치 시작 대기</h1>
+  <p id="playerRole">역할: </p>
+  <button id="readyBtn">게임 준비</button>
+  <p id="statusText">상대 기다리는 중...</p>
+</div>
 <div id="ui">
   <div class="hud-row">
     <div style="width:120px">HP</div>
@@ -73,6 +79,38 @@ Num 0: 포격
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
 <script>
+  const lobby = document.getElementById("lobby");
+const readyBtn = document.getElementById("readyBtn");
+const statusText = document.getElementById("statusText");
+const playerRole = document.getElementById("playerRole");
+
+let myRoom = null;
+let isHost = false;
+
+socket.on("roomJoined", (data) => {
+  myRoom = data.room;
+  isHost = data.isHost;
+  playerRole.textContent = "역할: " + (isHost ? "방장" : "참가자");
+});
+
+readyBtn.addEventListener("click", () => {
+  socket.emit("ready");
+  readyBtn.disabled = true;
+  statusText.textContent = "준비 완료. 상대를 기다리는 중...";
+});
+
+socket.on("startGame", ({ countdown }) => {
+  let timeLeft = countdown;
+  statusText.textContent = `게임 시작까지 ${timeLeft}초...`;
+  const interval = setInterval(() => {
+    timeLeft--;
+    statusText.textContent = `게임 시작까지 ${timeLeft}초...`;
+    if (timeLeft <= 0) {
+      clearInterval(interval);
+      lobby.style.display = "none"; // 대기 UI 숨김
+    }
+  }, 1000);
+});
 (() => {
   // 🔊 사운드 파일 로드
 const sounds = {
@@ -727,6 +765,7 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
 
 
