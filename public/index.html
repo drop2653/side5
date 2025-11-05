@@ -93,6 +93,24 @@ if (readyBtn) {
     statusText.textContent = "준비 완료. 상대를 기다리는 중...";
   });
 }
+    // State
+ const playerTank = {
+  x: W/2, y: H/2,
+  angle: 0,
+  turretAngle: 0,
+  speedLeft: 0, speedRight: 0,
+  maxTrackSpeed: 50,
+  trackAccel: 220,
+  mass: 120,
+  hp: 100
+};
+
+const enemyTank = {
+  x: W/2, y: H/2,
+  angle: 0,
+  turretAngle: 0,
+  hp: 100
+};
 
 // 방 참가 시 수신
 socket.on("roomJoined", (data) => {
@@ -169,25 +187,6 @@ socket.on("enemyFire", (data) => {
 
   const W = canvas.width, H = canvas.height;
 
-  // State
- const playerTank = {
-  x: W/2, y: H/2,
-  angle: 0,
-  turretAngle: 0,
-  speedLeft: 0, speedRight: 0,
-  maxTrackSpeed: 50,
-  trackAccel: 220,
-  mass: 120,
-  hp: 100
-};
-
-const enemyTank = {
-  x: W/2, y: H/2,
-  angle: 0,
-  turretAngle: 0,
-  hp: 100
-};
-
 // lobby 요소를 미리 가져오기
 const playerRole = document.getElementById("playerRole");
 const readyBtn = document.getElementById("readyBtn");
@@ -197,6 +196,10 @@ const statusText = document.getElementById("statusText");
   if (playerRole) {
     playerRole.textContent = "역할: " + (isHost ? "방장" : "참가자");
   }
+  let myRoom = null;
+let myId = null;
+let enemyId = null;
+let isHost = false; // ✅ 여기에 추가!
 
 // 전차 시작 위치 설정
 if (typeof playerTank !== "undefined") {
@@ -810,6 +813,7 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
 
 
