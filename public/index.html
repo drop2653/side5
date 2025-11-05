@@ -90,7 +90,10 @@ sounds.reload.loop = true;
 window.addEventListener('click', () => {
   Object.values(sounds).forEach(s => s.play().then(()=>s.pause()).catch(()=>{}));
 }, { once: true });
-const socket = io("https://side5.onrender.com"); // 실제 서버 주소로 교체
+const socket = io("https://side5.onrender.com");
+  let myId = null;
+socket.on("init", (data) => {
+  myId = data.id;// 실제 서버 주소로 교체
 socket.on("opponentMove", (data) => {
   enemyTank.x = data.x;
   enemyTank.y = data.y;
@@ -717,3 +720,4 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
