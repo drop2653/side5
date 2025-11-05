@@ -80,6 +80,12 @@ Num 0: 포격
 
 <script>
   const socket = io("https://side5.onrender.com");
+
+  let myRoom = null;
+let myId = null;
+let enemyId = null;
+let isHost = false;
+  
 const lobby = document.getElementById("lobby");
 const readyBtn = document.getElementById("readyBtn");
 const statusText = document.getElementById("statusText");
@@ -149,7 +155,6 @@ sounds.reload.loop = true;
 window.addEventListener('click', () => {
   Object.values(sounds).forEach(s => s.play().then(()=>s.pause()).catch(()=>{}));
 }, { once: true });
-  let myId = null;
  socket.on("startGame", ({ countdown }) => {
   let timeLeft = countdown;
   statusText.textContent = `게임 시작까지 ${timeLeft}초...`;
@@ -196,10 +201,6 @@ const statusText = document.getElementById("statusText");
   if (playerRole) {
     playerRole.textContent = "역할: " + (isHost ? "방장" : "참가자");
   }
-  let myRoom = null;
-let myId = null;
-let enemyId = null;
-let isHost = false; // ✅ 여기에 추가!
 
 // 전차 시작 위치 설정
 if (typeof playerTank !== "undefined") {
@@ -813,6 +814,7 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
 
 
