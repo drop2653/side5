@@ -1,39 +1,43 @@
-import express from 'express';
-import http from 'http';
-import { Server } from 'socket.io';
-import path from 'path';
-import { fileURLToPath } from 'url';
+// 서버 방 관리 구조
+const rooms = {};
 
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
-
-// HTML 제공 (정적 파일)
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-app.use(express.static(path.join(__dirname, 'public'))); // public 폴더에 index.html 등
-
-// 사용자 연결 처리
 io.on('connection', (socket) => {
-  const startX = 200 + Math.random() * 1600;
-  const startY = 200 + Math.random() * 1100;
+  let joinedRoom = null;
 
-  socket.emit("init", { id: socket.id, x: startX, y: startY });
+  // 방 자동 배정 (최대 2인)
+  for (const room in rooms) {
+    if (rooms[room].players.length < 2) {
+      joinedRoom = room;
+      break;
+    }
+  }
+  if (!joinedRoom) {
+    joinedRoom = "room_" + Math.random().toString(36).substr(2, 5);
+    rooms[joinedRoom] = { players: [], ready: {}, gameStarted: false };
+  }
 
-  socket.on("move", (data) => {
-    // 상대방에게만 전송
-    socket.broadcast.emit("opponentMove", { ...data, id: socket.id });
+  socket.join(joinedRoom);
+  rooms[joinedRoom].players.push(socket.id);
+  const isHost = rooms[joinedRoom].players.length === 1;
+
+  // 클라이언트에 방 정보 전송
+  socket.emit("roomJoined", { room: joinedRoom, isHost });
+
+  // 준비 상태 수신
+  socket.on("ready", () => {
+    rooms[joinedRoom].ready[socket.id] = true;
+
+    // 2명 다 준비 시 게임 시작
+    if (
+      rooms[joinedRoom].players.length === 2 &&
+      rooms[joinedRoom].players.every(pid => rooms[joinedRoom].ready[pid])
+    ) {
+      rooms[joinedRoom].gameStarted = true;
+      io.to(joinedRoom).emit("startGame", { countdown: 5 });
+    }
   });
 
-  socket.on("fire", (data) => {
-    socket.broadcast.emit("enemyFire", { ...data, id: socket.id });
-  });
-});
-
-// ✅ 서버 시작
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`✅ 서버 실행중: http://localhost:${PORT}`);
+  // 기존 이동 / 발사 이벤트 그대로 처리
 });
 
 
