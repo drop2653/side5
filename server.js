@@ -50,13 +50,19 @@ io.on("connection", (socket) => {
   socket.on("ready", () => {
     rooms[joinedRoom].ready[socket.id] = true;
 
+     console.log("📥 준비 상태:", rooms[joinedRoom].ready);
+  console.log("👥 접속 인원:", rooms[joinedRoom].players);
+
     const allReady =
       rooms[joinedRoom].players.length === 2 &&
       rooms[joinedRoom].players.every((pid) => rooms[joinedRoom].ready[pid]);
 
+    console.log("✅ 모두 준비 완료? ", allReady);
+
     if (allReady && !rooms[joinedRoom].gameStarted) {
       rooms[joinedRoom].gameStarted = true;
       io.to(joinedRoom).emit("startGame", { countdown: 5 });
+      console.log("🚀 게임 시작 신호 보냄: ", joinedRoom);
     }
   });
 
@@ -92,6 +98,7 @@ io.on("connection", (socket) => {
 // ✅ Render에서 자동 포트 사용
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`✅ 서버 실행 중: ${PORT}`));
+
 
 
 
