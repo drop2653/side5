@@ -1,8 +1,8 @@
 {
-  "name": "tank-multiplayer-server",
+  "name": "side5",
   "version": "1.0.0",
-  "type": "module",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "start": "node server.js"
   },
@@ -11,3 +11,4 @@
     "socket.io": "^4.7.2"
   }
 }
+
