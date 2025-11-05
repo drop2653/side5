@@ -117,7 +117,6 @@ sounds.reload.loop = true;
 window.addEventListener('click', () => {
   Object.values(sounds).forEach(s => s.play().then(()=>s.pause()).catch(()=>{}));
 }, { once: true });
-const socket = io("https://side5.onrender.com");
   let myId = null;
  socket.on("startGame", ({ countdown }) => {
   let timeLeft = countdown;
@@ -766,6 +765,7 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
 
 
