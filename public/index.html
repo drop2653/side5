@@ -79,7 +79,7 @@ Num 0: 포격
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
 <script>
-  const socket = io("https://side5.onrender.com");
+  const socket = io("wss://side5.onrender.com");
 
   let myRoom = null;
 let myId = null;
@@ -183,13 +183,24 @@ socket.on("enemyFire", (data) => {
     bullets.push({ ...data, from: 'enemy' });
   }
 });
-  const canvas = document.getElementById('game');
-  const ctx = canvas.getContext('2d', { alpha: false });
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d', { alpha: false });
+const W = canvas.width, H = canvas.height;
+      // State
+ const playerTank = {
+  x: W/2, y: H/2,
+  angle: 0,
+  turretAngle: 0,
+  speedLeft: 0, speedRight: 0,
+  maxTrackSpeed: 50,
+  trackAccel: 220,
+  mass: 120,
+  hp: 100
+};
   const mmCanvas = document.getElementById('minimapCanvas');
   const mmCtx = mmCanvas.getContext('2d');
   const minimapEl = document.getElementById('minimap');
 
-  const W = canvas.width, H = canvas.height;
 
 // lobby 요소를 미리 가져오기
 const readyBtn = document.getElementById("readyBtn");
@@ -807,6 +818,7 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
 
 
