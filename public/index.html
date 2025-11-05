@@ -25,9 +25,12 @@
 <body>
   <div id="lobby" style="position:absolute;top:0;left:0;width:100%;height:100%;background:#000c;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:1000;">
   <h1>🛡️ 탱크 매치 시작 대기</h1>
-  <p id="playerRole">역할: </p>
-  <button id="readyBtn">게임 준비</button>
-  <p id="statusText">상대 기다리는 중...</p>
+  <p id="playerRole">역할: 선택 대기 중</p>
+  <div>
+    <button id="hostBtn">방장으로 시작</button>
+    <button id="guestBtn">참가자로 시작</button>
+  </div>
+  <p id="statusText">역할을 선택해주세요.</p>
 </div>
 <div id="ui">
   <div class="hud-row">
@@ -111,24 +114,33 @@ socket.on("roomJoined", (data) => {
 let myId = null;
 let enemyId = null;
 let isHost = false;
-let playerRole, readyBtn, statusText;
+let playerRole, hostBtn, guestBtn, statusText;
       
       document.addEventListener("DOMContentLoaded", () => {
   playerRole = document.getElementById("playerRole");
 
 window.onload = () => {
-  readyBtn = document.getElementById("readyBtn");
+  playerRole = document.getElementById("playerRole");
+  hostBtn = document.getElementById("hostBtn");
+  guestBtn = document.getElementById("guestBtn");
   statusText = document.getElementById("statusText");
 
-  readyBtn.addEventListener("click", () => {
-    socket.emit("ready");
-    readyBtn.disabled = true;
-    statusText.textContent = "준비 완료. 상대를 기다리는 중...";
-});
-  socket.on("startGame", ({ countdown }) => {
-    console.log("🚀 게임 시작:", countdown);
-    statusText.textContent = "게임 시작!";
+  hostBtn.addEventListener("click", () => {
+    socket.emit("chooseRole", { role: "host" });
+    lockRoleButtons();
   });
+
+  guestBtn.addEventListener("click", () => {
+    socket.emit("chooseRole", { role: "guest" });
+    lockRoleButtons();
+  });
+};
+
+function lockRoleButtons() {
+  hostBtn.disabled = true;
+  guestBtn.disabled = true;
+  statusText.textContent = "역할 선택 완료. 상대 대기 중...";
+}
 };
   const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d', { alpha: false });
@@ -841,6 +853,7 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
 
 
