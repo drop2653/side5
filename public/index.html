@@ -76,9 +76,9 @@ Num 0: 포격
 (() => {
   // 🔊 사운드 파일 로드
 const sounds = {
-  fire: new Audio('fire.mp3'),
-  reload: new Audio('reload.mp3'),
-  mg: new Audio('shot.mp3')
+  fire: new Audio('/fire.mp3'),
+  reload: new Audio('/reload.mp3'),
+  mg: new Audio('/shot.mp3')
 };
 Object.values(sounds).forEach(s => {
   s.volume = 0.5;
@@ -727,5 +727,6 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
 
