@@ -100,18 +100,6 @@ readyBtn.addEventListener("click", () => {
   statusText.textContent = "준비 완료. 상대를 기다리는 중...";
 });
 
-socket.on("startGame", ({ countdown }) => {
-  let timeLeft = countdown;
-  statusText.textContent = `게임 시작까지 ${timeLeft}초...`;
-  const interval = setInterval(() => {
-    timeLeft--;
-    statusText.textContent = `게임 시작까지 ${timeLeft}초...`;
-    if (timeLeft <= 0) {
-      clearInterval(interval);
-      lobby.style.display = "none"; // 대기 UI 숨김
-    }
-  }, 1000);
-});
 (() => {
   // 🔊 사운드 파일 로드
 const sounds = {
@@ -131,6 +119,18 @@ window.addEventListener('click', () => {
 }, { once: true });
 const socket = io("https://side5.onrender.com");
   let myId = null;
+ socket.on("startGame", ({ countdown }) => {
+  let timeLeft = countdown;
+  statusText.textContent = `게임 시작까지 ${timeLeft}초...`;
+  const interval = setInterval(() => {
+    timeLeft--;
+    statusText.textContent = `게임 시작까지 ${timeLeft}초...`;
+    if (timeLeft <= 0) {
+      clearInterval(interval);
+      lobby.style.display = "none"; // 대기 UI 숨김
+    }
+  }, 1000);
+});
 socket.on("init", (data) => {
   myId = data.id;// 실제 서버 주소로 교체
   });
@@ -766,6 +766,7 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
 
 
