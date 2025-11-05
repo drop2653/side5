@@ -79,7 +79,7 @@ Num 0: 포격
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
 <script>
-  const socket = io("wss://side5.onrender.com");
+  const socket = io();
 
   let myRoom = null;
 let myId = null;
@@ -99,18 +99,10 @@ if (readyBtn) {
     statusText.textContent = "준비 완료. 상대를 기다리는 중...";
   });
 }
+  const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d', { alpha: false });
+const W = canvas.width, H = canvas.height;
     // State
- const playerTank = {
-  x: W/2, y: H/2,
-  angle: 0,
-  turretAngle: 0,
-  speedLeft: 0, speedRight: 0,
-  maxTrackSpeed: 50,
-  trackAccel: 220,
-  mass: 120,
-  hp: 100
-};
-
 const enemyTank = {
   x: W/2, y: H/2,
   angle: 0,
@@ -121,7 +113,7 @@ const enemyTank = {
 // 방 참가 시 수신
 socket.on("roomJoined", (data) => {
   myRoom = data.room;
-  isHost = data.isHost;
+  isHtos = data.isHost;
   myId = data.playerId;
   enemyId = data.enemyId;
   playerRole.textContent = "역할: " + (isHost ? "방장" : "참가자");
@@ -818,6 +810,7 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
 
 
