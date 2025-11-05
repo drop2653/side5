@@ -91,8 +91,7 @@ Num 0: 포격
     playerRole.textContent = "역할: " + (isHost ? "방장" : "참가자");
   } else {
     console.warn("⚠️ playerRole 요소를 찾지 못했습니다.");
-  }
-      const playerRole = document.getElementById("playerRole");  // 반드시 window.onload 바깥에서 선언
+  } 
 const readyBtn = document.getElementById("readyBtn");
 const statusText = document.getElementById("statusText");
 
@@ -842,6 +841,7 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
 
 
