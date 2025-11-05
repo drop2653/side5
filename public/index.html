@@ -124,7 +124,6 @@ socket.on("roomJoined", (data) => {
   isHost = data.isHost;
   myId = data.playerId;
   enemyId = data.enemyId;
-
   playerRole.textContent = "역할: " + (isHost ? "방장" : "참가자");
 
   // 각 플레이어 위치 분리
@@ -193,14 +192,8 @@ socket.on("enemyFire", (data) => {
   const W = canvas.width, H = canvas.height;
 
 // lobby 요소를 미리 가져오기
-const playerRole = document.getElementById("playerRole");
 const readyBtn = document.getElementById("readyBtn");
 const statusText = document.getElementById("statusText");
-
-  // 역할 출력
-  if (playerRole) {
-    playerRole.textContent = "역할: " + (isHost ? "방장" : "참가자");
-  }
 
 // 전차 시작 위치 설정
 if (typeof playerTank !== "undefined") {
@@ -814,6 +807,7 @@ if (reloadTimer > 0) {
 </script>
 </body>
 </html>
+
 
 
 
