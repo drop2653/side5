@@ -45,13 +45,16 @@ io.on("connection", (socket) => {
 
   // 방 참가 정보 전달
   const players = rooms[joinedRoom].players;
-const enemyId = players.find(id => id !== socket.id);
-socket.emit("roomJoined", {
-  room: joinedRoom,
-  isHost,
-  playerId: socket.id,
-  enemyId: enemyId || null
-});
+
+for (const pid of players) {
+  const enemyId = players.find(id => id !== pid);
+  io.to(pid).emit("roomJoined", {
+    room: joinedRoom,
+    isHost: pid === players[0],
+    playerId: pid,
+    enemyId: enemyId || null
+  });
+}
 
   // 준비 이벤트 처리
   socket.on("ready", () => {
@@ -105,6 +108,7 @@ socket.emit("roomJoined", {
 // ✅ Render에서 자동 포트 사용
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`✅ 서버 실행 중: ${PORT}`));
+
 
 
 
