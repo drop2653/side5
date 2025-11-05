@@ -13,6 +13,10 @@ app.use(express.static("public"));
 io.on("connection", (socket) => {
   console.log("🚀 연결됨:", socket.id);
 
+  io.on("connection", (socket) => {
+  console.log("연결됨:", socket.id);
+  socket.emit("init", { id: socket.id });  // 클라이언트에게 자신의 ID 전달
+
   socket.on("move", (data) => {
     socket.broadcast.emit("opponentMove", data);
   });
@@ -31,3 +35,4 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`🌐 서버 실행 중: http://localhost:${PORT}`);
 });
+
